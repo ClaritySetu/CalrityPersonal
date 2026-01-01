@@ -3,197 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClarityStream | Interactive Feed</title>
+    <title>ClarityStream | Master Archive</title>
     <style>
         :root {
-            --bg: #000000;
-            --card: #1c1c1e;
-            --border: #2c2c2e;
-            --text: #ffffff;
-            --text-dim: #8e8e93;
-            --accent: #0a84ff;
+            --bg: #050505;
+            --card: #151517;
+            --border: #2a2a2c;
+            --text: #e0e0e0;
+            --text-dim: #888888;
+            --accent: #2997ff;
             --physics: #ffd60a;
             --tech: #bf5af2;
             --tasks: #ff453a;
-            --finance: #32d74b;
+            --finance: #30d158;
+            --strategy: #ff9f0a;
+            --personal: #64d2ff;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg); color: var(--text);
             margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
+            padding-bottom: 80px;
         }
 
-        /* --- Header & Navigation --- */
+        /* --- Sticky Header --- */
         header {
-            position: sticky; top: 0; width: 100%; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0;
-            text-align: center;
+            position: sticky; top: 0; width: 100%; background: rgba(5,5,5,0.9);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border); z-index: 1000;
+            padding: 10px 15px; display: flex; flex-direction: column; gap: 10px;
         }
-        header h1 { font-size: 20px; margin: 0; background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 650px; margin: 0 auto; }
+        h1 { font-size: 18px; font-weight: 800; margin: 0; background: linear-gradient(90deg, #ff9f0a, #ff453a, #bf5af2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* --- Search Bar --- */
+        .search-container { width: 100%; max-width: 650px; margin: 0 auto; }
+        .search-input {
+            width: 100%; background: #222224; border: none; padding: 10px 15px;
+            border-radius: 12px; color: white; font-size: 14px;
+        }
+        .search-input::placeholder { color: #555; }
 
-        /* --- Filter Bar --- */
+        /* --- Filter Scroll --- */
         .filter-bar {
-            display: flex; gap: 10px; overflow-x: auto; width: 100%; max-width: 600px;
-            padding: 15px 20px; scrollbar-width: none;
+            display: flex; gap: 8px; overflow-x: auto; width: 100%; max-width: 650px;
+            padding-bottom: 5px; scrollbar-width: none; margin: 0 auto;
         }
         .filter-bar::-webkit-scrollbar { display: none; }
         .filter-btn {
-            background: var(--card); border: 1px solid var(--border); color: var(--text-dim);
-            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
-            white-space: nowrap; cursor: pointer; transition: 0.2s;
+            background: #222224; color: var(--text-dim); padding: 6px 14px;
+            border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap;
+            cursor: pointer; border: 1px solid transparent; transition: 0.2s;
         }
-        .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .filter-btn.active { background: var(--text); color: black; }
 
-        /* --- Feed Container --- */
-        .feed { width: 100%; max-width: 600px; padding: 10px; }
+        /* --- Feed --- */
+        .feed { width: 100%; max-width: 650px; padding: 15px; }
         
         .card { 
-            background: var(--card); border-radius: 20px; padding: 20px; 
-            margin-bottom: 15px; border: 1px solid var(--border);
-            animation: fadeIn 0.3s ease-in;
+            background: var(--card); border-radius: 16px; padding: 18px; 
+            margin-bottom: 16px; border: 1px solid var(--border);
+            position: relative; overflow: hidden;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .pinned-marker {
+            position: absolute; top: 0; right: 0; background: var(--accent);
+            color: white; font-size: 9px; font-weight: bold; padding: 2px 8px;
+            border-bottom-left-radius: 8px; display: none;
+        }
+        .card.is-pinned { border-color: var(--accent); background: #0a101a; }
+        .card.is-pinned .pinned-marker { display: block; }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .card-title { font-weight: 700; font-size: 16px; flex: 1; padding-right: 10px; }
+        .card-title { font-weight: 700; font-size: 15px; line-height: 1.3; color: #fff; flex: 1; padding-right: 15px; }
         
-        .badge { font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
-        .cat-physics { color: var(--physics); background: rgba(255, 214, 10, 0.1); }
-        .cat-tech { color: var(--tech); background: rgba(191, 90, 242, 0.1); }
-        .cat-logistics { color: var(--tasks); background: rgba(255, 69, 58, 0.1); }
-        .cat-finance { color: var(--finance); background: rgba(50, 215, 75, 0.1); }
-
-        .card-content { font-size: 15px; line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
+        .badge { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .card-footer { display: flex; gap: 25px; border-top: 1px solid var(--border); padding-top: 15px; }
-        .action-btn { cursor: pointer; font-size: 18px; transition: transform 0.2s; filter: grayscale(1); }
-        .action-btn.active { filter: grayscale(0); transform: scale(1.2); }
+        /* Category Colors */
+        .b-physics { color: var(--physics); background: rgba(255, 214, 10, 0.15); }
+        .b-tech { color: var(--tech); background: rgba(191, 90, 242, 0.15); }
+        .b-logistics { color: var(--tasks); background: rgba(255, 69, 58, 0.15); }
+        .b-finance { color: var(--finance); background: rgba(48, 209, 88, 0.15); }
+        .b-strategy { color: var(--strategy); background: rgba(255, 159, 10, 0.15); }
+        .b-personal { color: var(--personal); background: rgba(100, 210, 255, 0.15); }
 
-        .pinned-label { font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 5px; display: none; }
-        .is-pinned .pinned-label { display: block; }
-        .is-pinned { border-color: var(--accent); background: #001220; }
+        .content { font-size: 14px; line-height: 1.5; color: #d0d0d0; white-space: pre-wrap; margin-bottom: 12px; }
+        
+        /* Scrollable content box for long notes */
+        .scroll-box {
+            max-height: 150px; overflow-y: auto; background: #000; 
+            padding: 10px; border-radius: 8px; border: 1px solid #333;
+            font-size: 13px; color: #aaa;
+        }
+
+        /* List Items */
+        .task-row { display: flex; gap: 10px; margin-bottom: 6px; align-items: flex-start; }
+        .check-circle { width: 16px; height: 16px; border: 1.5px solid #555; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+        .check-circle.done { background: #555; display: flex; align-items: center; justify-content: center; }
+        .check-circle.done::after { content: '✓'; font-size: 10px; color: #fff; }
+        .task-text { flex: 1; font-size: 14px; }
+        .task-text.done { text-decoration: line-through; color: #666; }
+
+        .card-footer { display: flex; gap: 20px; border-top: 1px solid #333; padding-top: 12px; margin-top: 5px; }
+        .icon-btn { cursor: pointer; font-size: 18px; opacity: 0.6; transition: 0.2s; }
+        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
+        .icon-btn.active { opacity: 1; text-shadow: 0 0 10px var(--accent); }
 
         a { color: var(--accent); text-decoration: none; }
-        .empty-state { text-align: center; padding: 50px; color: var(--text-dim); }
+        
+        .empty-msg { text-align: center; color: #555; margin-top: 50px; }
     </style>
 </head>
 <body>
 
-    <header><h1>ClarityStream</h1></header>
-
-    <div class="filter-bar" id="filterBar">
-        <div class="filter-btn active" onclick="filterFeed('all', this)">All</div>
-        <div class="filter-btn" onclick="filterFeed('physics', this)">Physics</div>
-        <div class="filter-btn" onclick="filterFeed('tech', this)">Tech</div>
-        <div class="filter-btn" onclick="filterFeed('logistics', this)">Logistics</div>
-        <div class="filter-btn" onclick="filterFeed('finance', this)">Finance</div>
-        <div class="filter-btn" onclick="filterFeed('saved', this)">🔖 Saved</div>
-    </div>
-
-    <div class="feed" id="mainFeed">
+    <header>
+        <div class="top-row">
+            <h1>ClarityStream</h1>
+            <div style="font-size: 12px; color: #666;" id="count-display">Loading...</div>
         </div>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search notes, names, numbers..." onkeyup="handleSearch(this)">
+        </div>
+        <div class="filter-bar">
+            <div class="filter-btn active" onclick="setFilter('all', this)">All</div>
+            <div class="filter-btn" onclick="setFilter('physics', this)">Physics</div>
+            <div class="filter-btn" onclick="setFilter('tech', this)">Tech</div>
+            <div class="filter-btn" onclick="setFilter('logistics', this)">Logistics</div>
+            <div class="filter-btn" onclick="setFilter('finance', this)">Finance</div>
+            <div class="filter-btn" onclick="setFilter('strategy', this)">Strategy</div>
+            <div class="filter-btn" onclick="setFilter('personal', this)">Personal</div>
+            <div class="filter-btn" onclick="setFilter('saved', this)">🔖 Saved</div>
+        </div>
+    </header>
+
+    <div class="feed" id="feed"></div>
 
     <script>
-        // DATA OBJECT: Incorporating your Keep Archive
-        const notes = [
-            { id: 1, cat: 'tech', title: 'AI Capabilities', content: '• Question sets & Theory via LaTeX\n• Manim simulations for Physics\n• NoteBookLM chapter research' },
-            { id: 2, cat: 'physics', title: 'Physics Roadmap', content: 'Relative motion, River-boat, Rain-man, COM in explosion, Vertical circular motion conditions.' },
-            { id: 3, cat: 'finance', title: 'Subscriptions', content: 'BookSnap, Google Drive (₹1300), Gemini (Dec 26), ISAC lifetime.' },
-            { id: 4, cat: 'logistics', title: 'Devalay Measurements', content: 'Platform: 27", Pooja: 34", Gallery: 57", Cupboard Depth: 29".' },
-            { id: 5, cat: 'physics', title: 'YouTube Resources', content: 'Fluid Mechanics, Error Analysis, and Work Energy Power playlists active.' },
-            { id: 6, cat: 'tech', title: 'Voice-to-Text Strategy', content: 'Evaluating Otter.ai. AI assists but learning takes time. Practice is key.' },
-            { id: 7, cat: 'finance', title: 'Vehicle Logs', content: 'Altroz: Service done Aug 2025.\nJupiter: Next service June 2026.' },
-            { id: 8, cat: 'logistics', title: 'Getup Checklist', content: 'Flight mode (1hr), Lukewarm water, JAPA (4 mala), Newspaper.' }
+        // --- 1. THE DATA ARCHIVE ---
+        const rawData = [
+            // BATCH 1 & 2
+            { id: 1, cat: 'logistics', title: 'Purchase Near Future', content: '- [ ] Dashcam' },
+            { id: 2, cat: 'finance', title: 'Tasks of Investment 💰', content: '- [x] Transfer excess funds to Arbitrage from YesB' },
+            { id: 3, cat: 'tech', title: 'Screen Recording', content: 'For screen recording use Windows XBox Game (video only). \nOBS is better for system sounds.\nExploring iPad voice recording.' },
+            { id: 4, cat: 'physics', title: 'Degree of Freedom', content: 'Study about solids.\nVibrational modes.\nStatistical background.' },
+            { id: 5, cat: 'logistics', title: 'Fluid Dynamics Printing', content: 'Send fluid dynamics documents for printing.' },
+            { id: 6, cat: 'strategy', title: 'Voice-to-Text Reflection', isLong: true, content: 'AI can automate tasks but cannot learn for you. \n\nLearning Python or Frameworks takes fixed time. AI gives overviews. \n\nGemini Calendar Sync was a success. \n\nNeed strict evening framework to avoid productivity loss. \n\nEvaluating Otter.ai vs others.' },
+            { id: 7, cat: 'logistics', title: 'Grocery & Purchases 🛒', content: '- [ ] Helmet screen\n- [x] Wiper liquid\n- [x] Samanyu Birthday gift\n- [ ] M Seal for sink\n- [ ] Jaguar Tap repair' },
+            { id: 8, cat: 'tech', title: 'NotebookLM General Topics', content: 'Reports on Parenting & Globalisation in 1977 found.\nAudio overviews are great for driving.' },
+            { id: 9, cat: 'physics', title: 'Paragraph Type Questions', content: 'Develop paragraph questions using advanced concepts to teach reading comprehension simultaneously.' },
+            
+            // BATCH 3
+            { id: 10, cat: 'physics', title: 'Advanced Circular Motion', content: 'General curvilinear motion. Revise via Pathfinder/Klepner.' },
+            { id: 11, cat: 'physics', title: 'Advanced Rotational Mechanics', content: 'Concepts of Precession. Explore Klepner or David Morin.' },
+            { id: 12, cat: 'tech', title: 'AI Capabilities', content: '1. LaTeX for Question/Theory\n2. Manim Simulations\n3. NoteBookLM Research\n4. Web Dev (Github/Framer)' },
+            { id: 13, cat: 'physics', title: 'Teaching Task', content: '- [ ] Update Lecture plan excel sheet (Last modified April).' },
+            { id: 14, cat: 'tech', title: 'NCERT Physics Link', content: '<a href="https://claritysetu.github.io/NCERT-Physics/">Open Website</a>' },
+            { id: 15, cat: 'physics', title: 'NTV Tasks', content: '- [ ] Sheet on Hydrostatics\n- [ ] Spherical/Plane Mirror Sheet\n- [ ] 8th Heat & Temp Quizzes\n- [x] Share magnetism videos with Aditya Paul' },
+            { id: 16, cat: 'finance', title: 'Subscriptions & Courses', content: '- [ ] BookSnap (Audio)\n- [ ] Magzter\n- [ ] ISAC Video Books\n- [ ] Crashup Notes\n- [ ] AI Samarth Centa\n- [ ] Swayam AI\n- [ ] Google Drive (₹1300)\n- [ ] Gemini (Exp 26 Dec)\n- [ ] ChatGPT Upgrade' },
+            { id: 17, cat: 'physics', title: 'Physics Concepts Bucket', content: '- Relative motion concepts\n- River boat / Rain man\n- Distance of closest approach\n- 2 Projectiles relative motion\n- SHM collision\n- Elevator weighing machine\n- Vertical circular motion looping\n- COM projectile explosion\n- Constraint motion (v vs 2v)\n- Balloon stone drop' },
+            { id: 18, cat: 'tech', title: 'Maim Engine', content: 'A python based engine.' },
+            { id: 19, cat: 'tech', title: 'Supplements Website', content: '<a href="https://sites.google.com/view/physics-supplements">Open Site</a>' },
+            { id: 20, cat: 'tech', title: 'Physics for Games', content: 'Coding Physics games requires knowledge of Physics.' },
+            { id: 21, cat: 'strategy', title: 'Music in Teaching', content: 'Make a transition music playlist for classroom/online teaching.' },
+            { id: 22, cat: 'tech', title: 'ClaritySetu Home', content: '<a href="https://sites.google.com/view/csphysics/home">Open ClaritySetu</a>' },
+            { id: 23, cat: 'logistics', title: 'Personal Logistics', content: '- [x] Car wash\n- [x] Samanyu Vaccination\n- [ ] Petrol refill ₹1000' },
+            { id: 24, cat: 'physics', title: 'YouTube Playlists', isLong: true, content: 'Fluid Mechanics: <a href="https://youtube.com/playlist?list=PLujeF43m9kxOZ9FDhqvfDLOK8H4BDknO_">Link</a>\nError Analysis: <a href="https://youtube.com/playlist?list=PLujeF43m9kxOFpKGE5pyqZi9cHRwqicKg">Link</a>\nCircular Motion: <a href="https://youtube.com/playlist?list=PLujeF43m9kxMTKsQsKXEqTOIGwSZejflL">Link</a>\nWEP: <a href="https://youtube.com/playlist?list=PLujeF43m9kxNnX4VGa79yLo3U8Af44XnU">Link</a>\nVectors: <a href="https://youtube.com/playlist?list=PLujeF43m9kxMnVuMaQFNx83FcSSnXx9EM">Link</a>' },
+            { id: 25, cat: 'personal', title: 'Upcoming Course', content: '- [ ] NLP on Udemy by Kain Ramsay' },
+            { id: 26, cat: 'strategy', title: 'Music Moods', content: 'Using musical tunes while teaching. Music changes moods.' },
+            
+            // BATCH 4
+            { id: 27, cat: 'logistics', title: 'L 104 MPNagar', content: 'R2 p142' },
+            { id: 28, cat: 'finance', title: 'Car Mileage', content: '7.5 ₹/km City (Speed Petrol)\n5.7 ₹/km Outstation (Speed)\n5.5 ₹/km Outstation (Normal)' },
+            { id: 29, cat: 'finance', title: 'Gold Rates (DP Jwellers)', content: '500g bar: 104000\n100g: 11304 making\nRate: 94600 incl 3% GST\nDyed bars: Rs 7/gm + 3% GST' },
+            { id: 30, cat: 'personal', title: 'Thought', content: '"Chulhe se yadi roti nikalna hai to chimte ko apna muh jalana padta hai"' },
+            { id: 31, cat: 'physics', title: 'Integration Applications', content: 'Area of circle, Volume of sphere/cone, Mass of rod/disc/sphere with density distribution.' },
+            { id: 32, cat: 'physics', title: 'ACME Form Nos', isLong: true, content: '1003404973 - Sufiyan Arif\n1000475524 - Arnav Goyal\n1000483188 - Vidite Agarwal\n1000468009 - Aditya Raj Sahu\n1000464912 - Swarnim Sahu\n1000667185 - Yatharth Anil Duragkar\n1008133083 - Ronit Chhapariya\n1003404412 - Anika Patel\n1000471069 - Ishant Koshta\n1003422940 - Himanshu Swami\n22231933 - Anant Khandelwal\n1000502803 - Kushagra Singh Lodhi\n(See full list in edit mode)' },
+            { id: 33, cat: 'physics', title: 'Topics Review Physics', content: '- Dispersion and deviation\n- Wave optics\n- Parallax method optical bench' },
+            { id: 34, cat: 'personal', title: 'Voter ID', content: 'S12137O8O0802251200000' },
+            { id: 35, cat: 'logistics', title: 'Metre Reading', content: '8554 (17 Aug 2024)\n8442 (Previous)' },
+            { id: 36, cat: 'finance', title: 'Transaction', content: '50,000 SUN 22Dec, 2024' },
+            { id: 37, cat: 'logistics', title: 'TATA RSA', content: '18002098282' },
+            { id: 38, cat: 'finance', title: 'MF ARN', content: '69583' },
+            { id: 39, cat: 'personal', title: 'Revision', content: 'Long division revise karo' },
+            { id: 40, cat: 'logistics', title: 'Furniture Repair', content: 'Godrej drawer channel 1ft for dressing table.\nDinesh Carpenter: 7509066600' },
+            { id: 41, cat: 'tech', title: 'AI Educational Tools', isLong: true, content: 'Magic school AI\nEduaide.ai\nScholarly/Elicit (Textbook summary)\nCanva AI/Beautiful.ai/Tome (Slides)\nQuizizz/Wayground\nSocratic/Khanmigo (Personalised)\nGradescope/Turnitin (Assessment)' },
+            { id: 42, cat: 'logistics', title: 'Tasks Household 🏠', content: '- [ ] Study almirah arrange' },
+            { id: 43, cat: 'physics', title: 'Atomic Academic Tasks', content: 'MOI sheet, one or two questions a day in latex.' },
+            { id: 44, cat: 'personal', title: 'Health Tasks', content: '- [ ] Vitamin D tablets\n- [ ] Vitamin B12 finish' },
+            { id: 45, cat: 'tech', title: 'VastuSpin 3D', content: '<a href="https://ai.studio/apps/drive/1kYwTdsLbZEwr0Uv5XXCTMNAMQ4sx6o9A">Open 3D App</a>' },
+            { id: 46, cat: 'logistics', title: 'Daily Activity Checklist', content: '- [ ] One jhola in car\n- [ ] Milk purchase\n- [ ] Car wiping/Water\n- [ ] Clean front windshield\n- [ ] Fruit/Veg stock\n- [ ] Iron Uniform Pair' },
+            { id: 47, cat: 'personal', title: 'Sunday Plans', content: '- Devalay visit\n- Shivani Car driving\n- Puchu play session\n- Food outsourcing\n- Chimney (Reliance)\n- Mandir\n- Vacuum cleaning' },
+            { id: 48, cat: 'personal', title: 'Physiotherapy', content: '7089188188 (Vinay society)' },
+            { id: 49, cat: 'physics', title: 'Physics Consolidation', content: 'Review notes of one chapter.' },
+            { id: 50, cat: 'physics', title: 'JEE Main 2019 Ranks', content: 'Sumit 782\nAuratrik 4854\nAnish 5213\nKrithik 28002' },
+            
+            // BATCH 5
+            { id: 52, cat: 'logistics', title: 'Altroz Servicing', content: 'Last: 14 Feb 2024 (Minor @ 8500km)\nNext Due: Aug 2024 (Major)\nAug 2025: Yearly done at Varenyam.' },
+            { id: 53, cat: 'physics', title: 'Minor Tasks', content: 'Go through Physical Education subject.' },
+            { id: 54, cat: 'finance', title: 'Health Insurance (CARE)', content: 'Mobile: 8585046987\nPolicy: 12830654\nAnkit ID: 61694325\nSamanyu ID: 43550275\nAdd On: NCB and CARE Shield' },
+            { id: 55, cat: 'strategy', title: 'Crowd Behaviour', content: 'Anonymity leads to loss of personal responsibility.' },
+            { id: 56, cat: 'personal', title: 'My IIT Result 2009', content: 'Reg: 1044022\nMarks: MA 24, PH 54, CY 85 (Total 163)\nAIR: 10,733\nOB(NCL): 1839\nAIEEE: 5999' },
+            { id: 57, cat: 'logistics', title: 'Jupiter Mileage', content: '₹200 petrol at 70 km mark.\n₹200 power at 4020 (trip A).' },
+            { id: 58, cat: 'finance', title: 'Financial Checklist', content: '- [ ] Market After close\n- [ ] Market Indices\n- [ ] PhonePe Wallet\n- [ ] ATM withdrawal?\n- [ ] Cash In Purse\n- [ ] MF NAV (2D)\n- [ ] UPI balance' },
+            { id: 59, cat: 'logistics', title: 'Jupiter Servicing', content: 'Oil change: Sept 2025\nNext due: June 30th\nHistory: 30 Dec 2023 (11,700km) ₹750 total.' },
+            { id: 60, cat: 'strategy', title: 'Social Reflection (Hindi)', isLong: true, content: 'कोचिंग को दोष देना सही नहीं। समस्या सामाजिक है।\nActions:\n1. 15+ को adult मानें।\n2. Avoid: Complain, Criticize, Compare.\n3. Office designations घर पर use न करें।\n4. सादगी अपनाएं। Money is main stress cause.\nHappy family = Strong Nation.' },
+            { id: 61, cat: 'logistics', title: 'Devalay Measurements 🏗️', isLong: true, content: 'Platform: 27"\nTiles: 39"\nPooja: 34"\nGallery: 57"\nRA Room: 130" x 13.5ft\nRS Room: 125" x 11ft 9"\nLR: 128" x 167"\nRB Cupboard: 29" depth\nTV Unit: 89" space' },
+            { id: 62, cat: 'strategy', title: 'Why Statement', content: 'Knowledge should be accessible the moment curiosity sparks, without prerequisites.' },
+            { id: 63, cat: 'strategy', title: 'Teachable?', content: 'Teachable??' },
+            { id: 64, cat: 'strategy', title: 'Seminars Workshop', content: 'Attend for exposure mechanism. Call local coachings. Information is currency (Ref: Nexus/Harari).' },
+            { id: 65, cat: 'tech', title: 'Product Strategy', content: 'Naya karne se chalta hai. Copy karne se nahi (Arratai vs Whatsapp).' },
+            { id: 66, cat: 'personal', title: 'Natbaba Mandir', content: '7489246804 (UPI for Donations)' },
+            { id: 67, cat: 'personal', title: 'Samanyu School Seminar', content: 'Evolved generation.\nGive scheduled time.\nSocially/Emotionally developed.\nDon\'t lecture/blame/shame.' },
+            { id: 69, cat: 'personal', title: 'Family Talk Topics', content: '- Car service/price\n- Mummy childhood memories\n- Life updates\n- Facts/Trivia\n- Jokes\n- Future stories' },
+            { id: 70, cat: 'physics', title: 'Evening Nurture List', isLong: true, content: '1008270098 - Anuj Sheoran\n1008276362 - Aarush Shukla\n1008258804 - Arnav Bokade\n1008265832 - Atharv Garg\n1008263257 - Atharva Negi\n1008257941 - Bhavesh Aswani\n(And 22 others)' },
+            { id: 71, cat: 'finance', title: 'Official Tasks (OneTime)', content: '- Address Update NPS\n- Branch update HDFC\n- SBI Branch update' },
+            { id: 72, cat: 'logistics', title: 'Registry Info', content: '57000 registry\nP-BPL-24-4773' },
+            { id: 73, cat: 'logistics', title: 'Getup Checklist', content: '- [ ] Check checklist\n- [ ] Flight mode 1hr\n- [ ] Lukewarm water\n- [ ] Brush/Face\n- [ ] JAPA 4 mala\n- [ ] Dustbins\n- [ ] Read/Journal/Newspaper' }
         ];
 
-        // State Management (Persistent)
-        let pinnedIds = JSON.parse(localStorage.getItem('pins')) || [];
-        let savedIds = JSON.parse(localStorage.getItem('saved')) || [];
+        // --- 2. STATE MANAGEMENT ---
         let currentFilter = 'all';
+        let pinnedIds = JSON.parse(localStorage.getItem('clarity_pins')) || [];
+        let savedIds = JSON.parse(localStorage.getItem('clarity_saved')) || [];
 
-        function renderFeed() {
-            const container = document.getElementById('mainFeed');
+        // --- 3. FUNCTIONS ---
+        function renderFeed(searchTerm = '') {
+            const container = document.getElementById('feed');
+            const countDisplay = document.getElementById('count-display');
             container.innerHTML = '';
 
-            let filteredNotes = notes;
-            if (currentFilter === 'saved') {
-                filteredNotes = notes.filter(n => savedIds.includes(n.id));
-            } else if (currentFilter !== 'all') {
-                filteredNotes = notes.filter(n => n.cat === currentFilter);
-            }
-
-            // Sort logic: Pinned first
-            filteredNotes.sort((a, b) => {
-                const aPinned = pinnedIds.includes(a.id) ? 1 : 0;
-                const bPinned = pinnedIds.includes(b.id) ? 1 : 0;
-                return bPinned - aPinned;
+            let filtered = rawData.filter(item => {
+                // Category Filter
+                if (currentFilter === 'saved') return savedIds.includes(item.id);
+                if (currentFilter !== 'all' && item.cat !== currentFilter) return false;
+                
+                // Search Filter
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    return item.title.toLowerCase().includes(term) || 
+                           item.content.toLowerCase().includes(term);
+                }
+                return true;
             });
 
-            if (filteredNotes.length === 0) {
-                container.innerHTML = `<div class="empty-state">No notes found in this category.</div>`;
+            // Sort: Pinned items first
+            filtered.sort((a, b) => {
+                const aPin = pinnedIds.includes(a.id) ? 1 : 0;
+                const bPin = pinnedIds.includes(b.id) ? 1 : 0;
+                return bPin - aPin;
+            });
+
+            countDisplay.innerText = `${filtered.length} Items`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-msg">No items found.</div>`;
                 return;
             }
 
-            filteredNotes.forEach(note => {
-                const isPinned = pinnedIds.includes(note.id);
-                const isSaved = savedIds.includes(note.id);
-                
+            filtered.forEach(item => {
+                const isPinned = pinnedIds.includes(item.id);
+                const isSaved = savedIds.includes(item.id);
+                const contentHtml = formatContent(item.content, item.isLong);
+
                 const card = document.createElement('div');
                 card.className = `card ${isPinned ? 'is-pinned' : ''}`;
                 card.innerHTML = `
-                    <div class="pinned-label">📌 PINNED</div>
+                    <div class="pinned-marker">PINNED</div>
                     <div class="card-header">
-                        <span class="card-title">${note.title}</span>
-                        <span class="badge cat-${note.cat}">${note.cat}</span>
+                        <span class="card-title">${item.title}</span>
+                        <span class="badge b-${item.cat}">${item.cat}</span>
                     </div>
-                    <div class="card-content">${note.content}</div>
+                    <div class="content">${contentHtml}</div>
                     <div class="card-footer">
-                        <span class="action-btn" onclick="toggleLike(this)">🤍</span>
-                        <span class="action-btn ${isPinned ? 'active' : ''}" onclick="togglePin(${note.id})">📌</span>
-                        <span class="action-btn ${isSaved ? 'active' : ''}" onclick="toggleSave(${note.id})">🔖</span>
+                        <span class="icon-btn ${isPinned ? 'active' : ''}" onclick="togglePin(${item.id})">📌</span>
+                        <span class="icon-btn ${isSaved ? 'active' : ''}" onclick="toggleSave(${item.id})">🔖</span>
+                        <span class="icon-btn">💬</span>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function filterFeed(category, el) {
-            currentFilter = category;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            el.classList.add('active');
-            renderFeed();
+        // Helper to format content (lists, links, scrollboxes)
+        function formatContent(text, isLong) {
+            // 1. Detect if it's a checklist
+            if (text.includes('- [ ]') || text.includes('- [x]')) {
+                return text.split('\n').map(line => {
+                    const isDone = line.includes('- [x]');
+                    const cleanText = line.replace(/- \[[x ]\] /, '');
+                    return `
+                        <div class="task-row">
+                            <div class="check-circle ${isDone ? 'done' : ''}"></div>
+                            <div class="task-text ${isDone ? 'done' : ''}">${cleanText}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 2. Handle scroll box for long notes
+            if (isLong) {
+                return `<div class="scroll-box">${text.replace(/\n/g, '<br>')}</div>`;
+            }
+
+            // 3. Standard text with newlines
+            return text;
+        }
+
+        // --- 4. INTERACTIONS ---
+        function setFilter(cat, btn) {
+            currentFilter = cat;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderFeed(document.querySelector('.search-input').value);
+        }
+
+        function handleSearch(input) {
+            renderFeed(input.value);
         }
 
         function togglePin(id) {
-            if (pinnedIds.includes(id)) {
-                pinnedIds = pinnedIds.filter(pid => pid !== id);
-            } else {
-                pinnedIds.push(id);
-            }
-            localStorage.setItem('pins', JSON.stringify(pinnedIds));
-            renderFeed();
+            if (pinnedIds.includes(id)) pinnedIds = pinnedIds.filter(pid => pid !== id);
+            else pinnedIds.push(id);
+            localStorage.setItem('clarity_pins', JSON.stringify(pinnedIds));
+            renderFeed(document.querySelector('.search-input').value);
         }
 
         function toggleSave(id) {
-            if (savedIds.includes(id)) {
-                savedIds = savedIds.filter(sid => sid !== id);
-            } else {
-                savedIds.push(id);
-            }
-            localStorage.setItem('saved', JSON.stringify(savedIds));
-            renderFeed();
-        }
-
-        function toggleLike(el) {
-            el.classList.toggle('active');
-            el.innerHTML = el.classList.contains('active') ? '❤️' : '🤍';
+            if (savedIds.includes(id)) savedIds = savedIds.filter(sid => sid !== id);
+            else savedIds.push(id);
+            localStorage.setItem('clarity_saved', JSON.stringify(savedIds));
+            renderFeed(document.querySelector('.search-input').value);
         }
 
         // Initial Load
         renderFeed();
+
     </script>
 </body>
 </html>
