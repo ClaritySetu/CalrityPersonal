@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClarityStream | Full Archive</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --card: #ffffff;
+            --border: 1px solid #dbdbdb;
+            --text-main: #262626;
+            --text-sec: #8e8e8e;
+            --accent: #0095f6;
+            --physics-tag: #f09433;
+            --tech-tag: #a855f7;
+            --task-tag: #ed4956;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            position: sticky; top: 0; width: 100%; height: 60px;
+            background: #fff; border-bottom: var(--border);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+
+        nav h1 {
+            font-size: 24px; font-family: 'Georgia', serif; font-style: italic;
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .container { width: 100%; max-width: 600px; padding: 20px; box-sizing: border-box; }
+
+        .card {
+            background: var(--card); border: var(--border); border-radius: 12px;
+            margin-bottom: 30px; overflow: hidden; transition: transform 0.2s;
+        }
+
+        .card-header {
+            padding: 15px; display: flex; align-items: center; border-bottom: 1px solid #efefef;
+        }
+
+        .title { font-weight: 600; font-size: 16px; }
+
+        .badge {
+            margin-left: auto; font-size: 10px; font-weight: bold; padding: 4px 10px;
+            border-radius: 20px; text-transform: uppercase;
+        }
+
+        .content { padding: 15px; font-size: 15px; line-height: 1.6; white-space: pre-wrap; }
+
+        /* List Styles */
+        .list-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .checked { color: var(--text-sec); text-decoration: line-through; }
+
+        /* Color Categories */
+        .cat-physics { border-top: 5px solid var(--physics-tag); }
+        .cat-physics .badge { background: #fff7ed; color: var(--physics-tag); }
+        
+        .cat-tech { border-top: 5px solid var(--tech-tag); }
+        .cat-tech .badge { background: #faf5ff; color: var(--tech-tag); }
+
+        .cat-logistics { border-top: 5px solid var(--task-tag); }
+        .cat-logistics .badge { background: #fef2f2; color: var(--task-tag); }
+
+        .footer-icons { padding: 10px 15px; border-top: 1px solid #efefef; display: flex; gap: 20px; font-size: 20px; }
+        a { color: var(--accent); text-decoration: none; word-break: break-all; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <nav><h1>ClarityStream</h1></nav>
+
+    <div class="container">
+
+        <div class="card cat-tech">
+            <div class="card-header"><span class="title">My Capabilities using AI</span><span class="badge">Innovation</span></div>
+            <div class="content">
+1. Question sets & Theory docs via <b>Latex</b>.
+2. <b>Manim</b> simulations for physics.
+3. <b>NoteBookLM</b> for deep research & audio overviews.
+4. Web development using Github, Framer, and Sites.
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-physics">
+            <div class="card-header"><span class="title">YouTube PlayLists</span><span class="badge">Resources</span></div>
+            <div class="content">
+<b>Physics for Nerds Series:</b>
+• Fluid Mechanics: <a href="https://youtube.com/playlist?list=PLujeF43m9kxOZ9FDhqvfDLOK8H4BDknO_">View Playlist</a>
+• Error Analysis: <a href="https://youtube.com/playlist?list=PLujeF43m9kxOFpKGE5pyqZi9cHRwqicKg">View Playlist</a>
+• Circular Motion Theory: <a href="https://youtube.com/playlist?list=PLujeF43m9kxMTKsQsKXEqTOIGwSZejflL">View Playlist</a>
+• Work Energy Power: <a href="https://youtube.com/playlist?list=PLujeF43m9kxNnX4VGa79yLo3U8Af44XnU">View Playlist</a>
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-physics">
+            <div class="card-header"><span class="title">Physics Concept Roadmap</span><span class="badge">Syllabus</span></div>
+            <div class="content">
+                <div class="list-item">⬜ Relative motion concepts</div>
+                <div class="list-item">⬜ River boat & Rain man concepts</div>
+                <div class="list-item">⬜ COM in projectile explosion</div>
+                <div class="list-item">⬜ Constraint motion simulation (v and 2v)</div>
+                <div class="list-item">⬜ Vertical circular motion conditions</div>
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-logistics">
+            <div class="card-header"><span class="title">Subscriptions & Courses</span><span class="badge">Finance</span></div>
+            <div class="content">
+                <div class="list-item">⬜ BookSnap app (Audio summaries)</div>
+                <div class="list-item">⬜ Google Drive Annual (₹1300)</div>
+                <div class="list-item">⬜ Gemini (Expiry: 26th Dec)</div>
+                <div class="list-item">⬜ ISAC Video Books Lifetime</div>
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-tech">
+            <div class="card-header"><span class="title">Voice-to-Text Strategy</span><span class="badge">Workflow</span></div>
+            <div class="content">
+"AI assists, it doesn't replace the learner. Practice is the point."
+Synchronized calendar using Gemini for timetable image—notifications worked perfectly today! 
+Evaluating <b>Otter.ai</b> for transcription accuracy.
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-physics">
+            <div class="card-header"><span class="title">NTV Tasks</span><span class="badge">Teaching</span></div>
+            <div class="content">
+                <div class="list-item">⬜ Sheet on Hydrostatics</div>
+                <div class="list-item">⬜ Spherical & Plane Mirror sheets</div>
+                <div class="list-item">⬜ 8th Class Quizzes (Heat & Temp)</div>
+                <div class="list-item">✅ Share magnetism videos with Aditya Paul</div>
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-physics">
+            <div class="card-header"><span class="title">Advanced Physics Prep</span><span class="badge">Research</span></div>
+            <div class="content">
+• <b>Circular Motion:</b> Reinforce curvilinear motion via Pathfinder/Klepner.
+• <b>Rotational:</b> Explore concepts of Precession via Klepner or Morin.
+• <b>Degree of Freedom:</b> Study solids & vibrational modes.
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-tech">
+            <div class="card-header"><span class="title">Screen Recording</span><span class="badge">Tech Tips</span></div>
+            <div class="content">
+Xbox Game Bar is integrated but limited.
+<b>OBS</b> is the primary choice for system sound capture.
+Investigating iPad recording for mobile workflow.
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-logistics">
+            <div class="card-header"><span class="title">Project ClaritySetu Links</span><span class="badge">Portfolios</span></div>
+            <div class="content">
+• <a href="https://claritysetu.github.io/NCERT-Physics/">NCERT Physics Hub</a>
+• <a href="https://sites.google.com/view/physics-supplements">Physics Supplements</a>
+• <a href="https://sites.google.com/view/csphysics/home">ClaritySetu Home</a>
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+        <div class="card cat-logistics">
+            <div class="card-header"><span class="title">Life & Logistics</span><span class="badge">Personal</span></div>
+            <div class="content">
+                <div class="list-item">✅ Car wash</div>
+                <div class="list-item">✅ Samanyu Vaccination</div>
+                <div class="list-item">⬜ Petrol refill (₹1000)</div>
+                <div class="list-item">⬜ Purchase Dashcam</div>
+            </div>
+            <div class="footer-icons"><span>❤️</span><span>💬</span><span>🔖</span></div>
+        </div>
+
+    </div>
+</body>
+</html>
