@@ -3,275 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClarityStream | Dark Mode</title>
+    <title>ClarityStream | Interactive Feed</title>
     <style>
         :root {
             --bg: #000000;
-            --card-bg: #1c1c1e;
-            --border: #38383a;
-            --text-main: #ffffff;
-            --text-sec: #8e8e93;
+            --card: #1c1c1e;
+            --border: #2c2c2e;
+            --text: #ffffff;
+            --text-dim: #8e8e93;
             --accent: #0a84ff;
-            --physics-tag: #ffd60a;
-            --tech-tag: #bf5af2;
-            --task-tag: #ff453a;
-            --nav-bg: rgba(0, 0, 0, 0.8);
+            --physics: #ffd60a;
+            --tech: #bf5af2;
+            --tasks: #ff453a;
+            --finance: #32d74b;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1.4;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg); color: var(--text);
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
         }
 
-        /* --- Sticky Mobile Nav --- */
-        nav {
-            position: sticky;
-            top: 0;
-            width: 100%;
-            height: 60px;
-            background: var(--nav-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        /* --- Header & Navigation --- */
+        header {
+            position: sticky; top: 0; width: 100%; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0;
+            text-align: center;
         }
+        header h1 { font-size: 20px; margin: 0; background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        nav h1 {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* --- Filter Bar --- */
+        .filter-bar {
+            display: flex; gap: 10px; overflow-x: auto; width: 100%; max-width: 600px;
+            padding: 15px 20px; scrollbar-width: none;
         }
-
-        /* --- Profile Section --- */
-        .profile {
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            background: var(--card); border: 1px solid var(--border); color: var(--text-dim);
+            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            white-space: nowrap; cursor: pointer; transition: 0.2s;
         }
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--tech-tag), var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+        .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* --- Feed Container --- */
+        .feed { width: 100%; max-width: 600px; padding: 10px; }
+        
+        .card { 
+            background: var(--card); border-radius: 20px; padding: 20px; 
+            margin-bottom: 15px; border: 1px solid var(--border);
+            animation: fadeIn 0.3s ease-in;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Feed Layout --- */
-        .container {
-            width: 100%;
-            max-width: 600px;
-            padding: 10px;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .card-title { font-weight: 700; font-size: 16px; flex: 1; padding-right: 10px; }
+        
+        .badge { font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+        .cat-physics { color: var(--physics); background: rgba(255, 214, 10, 0.1); }
+        .cat-tech { color: var(--tech); background: rgba(191, 90, 242, 0.1); }
+        .cat-logistics { color: var(--tasks); background: rgba(255, 69, 58, 0.1); }
+        .cat-finance { color: var(--finance); background: rgba(50, 215, 75, 0.1); }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            margin-bottom: 15px;
-            padding: 16px;
-            border: 1px solid var(--border);
-        }
+        .card-content { font-size: 15px; line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
+        
+        .card-footer { display: flex; gap: 25px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .action-btn { cursor: pointer; font-size: 18px; transition: transform 0.2s; filter: grayscale(1); }
+        .action-btn.active { filter: grayscale(0); transform: scale(1.2); }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+        .pinned-label { font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 5px; display: none; }
+        .is-pinned .pinned-label { display: block; }
+        .is-pinned { border-color: var(--accent); background: #001220; }
 
-        .title {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-main);
-        }
-
-        .badge {
-            font-size: 10px;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Category Badges */
-        .badge-physics { background: rgba(255, 214, 10, 0.15); color: var(--physics-tag); }
-        .badge-tech { background: rgba(191, 90, 242, 0.15); color: var(--tech-tag); }
-        .badge-task { background: rgba(255, 69, 58, 0.15); color: var(--task-tag); }
-
-        .content {
-            font-size: 14px;
-            color: var(--text-main);
-            white-space: pre-wrap;
-            margin-bottom: 15px;
-        }
-
-        /* List Items */
-        .list-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        .checkbox {
-            width: 18px;
-            height: 18px;
-            border-radius: 4px;
-            border: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .checked-box { background: var(--accent); border-color: var(--accent); }
-        .checked-box::after { content: '✓'; color: white; font-size: 12px; }
-        .strikethrough { color: var(--text-sec); text-decoration: line-through; }
-
-        .card-footer {
-            display: flex;
-            gap: 20px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-        }
-        .icon { font-size: 18px; cursor: pointer; opacity: 0.8; }
-
-        a { color: var(--accent); text-decoration: none; font-weight: 500; }
-
-        /* --- Footer Spacing --- */
-        .bottom-spacer { height: 80px; }
+        a { color: var(--accent); text-decoration: none; }
+        .empty-state { text-align: center; padding: 50px; color: var(--text-dim); }
     </style>
 </head>
 <body>
 
-    <nav><h1>ClarityStream</h1></nav>
+    <header><h1>ClarityStream</h1></header>
 
-    <div class="profile">
-        <div class="avatar">⚛️</div>
-        <div>
-            <div style="font-weight: 800; font-size: 17px;">Physics Mentor</div>
-            <div style="color: var(--text-sec); font-size: 13px;">ClaritySetu Project Feed</div>
-        </div>
+    <div class="filter-bar" id="filterBar">
+        <div class="filter-btn active" onclick="filterFeed('all', this)">All</div>
+        <div class="filter-btn" onclick="filterFeed('physics', this)">Physics</div>
+        <div class="filter-btn" onclick="filterFeed('tech', this)">Tech</div>
+        <div class="filter-btn" onclick="filterFeed('logistics', this)">Logistics</div>
+        <div class="filter-btn" onclick="filterFeed('finance', this)">Finance</div>
+        <div class="filter-btn" onclick="filterFeed('saved', this)">🔖 Saved</div>
     </div>
 
-    <div class="container">
-
-        <div class="card">
-            <div class="card-header">
-                <span class="title">My Capabilities using AI</span>
-                <span class="badge badge-tech">Tools</span>
-            </div>
-            <div class="content">
-• Question sets via <b>LaTeX</b>
-• <b>Manim</b> simulations
-• <b>NoteBookLM</b> for deep research
-• Web dev via Github, Framer, and Sites.
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
+    <div class="feed" id="mainFeed">
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <span class="title">YouTube PlayLists</span>
-                <span class="badge badge-physics">Video</span>
-            </div>
-            <div class="content">
-<b>Physics for Nerds:</b>
-- Fluid Mechanics: <a href="https://youtube.com/playlist?list=PLujeF43m9kxOZ9FDhqvfDLOK8H4BDknO_">Watch Now</a>
-- Error Analysis: <a href="https://youtube.com/playlist?list=PLujeF43m9kxOFpKGE5pyqZi9cHRwqicKg">Watch Now</a>
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
-        </div>
+    <script>
+        // DATA OBJECT: Incorporating your Keep Archive
+        const notes = [
+            { id: 1, cat: 'tech', title: 'AI Capabilities', content: '• Question sets & Theory via LaTeX\n• Manim simulations for Physics\n• NoteBookLM chapter research' },
+            { id: 2, cat: 'physics', title: 'Physics Roadmap', content: 'Relative motion, River-boat, Rain-man, COM in explosion, Vertical circular motion conditions.' },
+            { id: 3, cat: 'finance', title: 'Subscriptions', content: 'BookSnap, Google Drive (₹1300), Gemini (Dec 26), ISAC lifetime.' },
+            { id: 4, cat: 'logistics', title: 'Devalay Measurements', content: 'Platform: 27", Pooja: 34", Gallery: 57", Cupboard Depth: 29".' },
+            { id: 5, cat: 'physics', title: 'YouTube Resources', content: 'Fluid Mechanics, Error Analysis, and Work Energy Power playlists active.' },
+            { id: 6, cat: 'tech', title: 'Voice-to-Text Strategy', content: 'Evaluating Otter.ai. AI assists but learning takes time. Practice is key.' },
+            { id: 7, cat: 'finance', title: 'Vehicle Logs', content: 'Altroz: Service done Aug 2025.\nJupiter: Next service June 2026.' },
+            { id: 8, cat: 'logistics', title: 'Getup Checklist', content: 'Flight mode (1hr), Lukewarm water, JAPA (4 mala), Newspaper.' }
+        ];
 
-        <div class="card">
-            <div class="card-header">
-                <span class="title">Concept Roadmap</span>
-                <span class="badge badge-physics">Syllabus</span>
-            </div>
-            <div class="content">
-                <div class="list-item"><div class="checkbox"></div>Relative motion concepts</div>
-                <div class="list-item"><div class="checkbox"></div>River boat & Rain man concepts</div>
-                <div class="list-item"><div class="checkbox"></div>COM in projectile explosion</div>
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
-        </div>
+        // State Management (Persistent)
+        let pinnedIds = JSON.parse(localStorage.getItem('pins')) || [];
+        let savedIds = JSON.parse(localStorage.getItem('saved')) || [];
+        let currentFilter = 'all';
 
-        <div class="card">
-            <div class="card-header">
-                <span class="title">Subscriptions</span>
-                <span class="badge badge-task">Finance</span>
-            </div>
-            <div class="content">
-                <div class="list-item"><div class="checkbox"></div>BookSnap app</div>
-                <div class="list-item"><div class="checkbox"></div>Google Drive (₹1300)</div>
-                <div class="list-item"><div class="checkbox checked-box"></div>Gemini (Dec 26 expiry)</div>
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
-        </div>
+        function renderFeed() {
+            const container = document.getElementById('mainFeed');
+            container.innerHTML = '';
 
-        <div class="card">
-            <div class="card-header">
-                <span class="title">Voice-to-Text Strategy</span>
-                <span class="badge badge-tech">Workflow</span>
-            </div>
-            <div class="content">
-"AI assists, it doesn't replace the learner. Practice is the point."
+            let filteredNotes = notes;
+            if (currentFilter === 'saved') {
+                filteredNotes = notes.filter(n => savedIds.includes(n.id));
+            } else if (currentFilter !== 'all') {
+                filteredNotes = notes.filter(n => n.cat === currentFilter);
+            }
 
-<b>Status:</b> Calendar sync via Gemini image worked flawlessly today. Otter.ai under review.
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
-        </div>
+            // Sort logic: Pinned first
+            filteredNotes.sort((a, b) => {
+                const aPinned = pinnedIds.includes(a.id) ? 1 : 0;
+                const bPinned = pinnedIds.includes(b.id) ? 1 : 0;
+                return bPinned - aPinned;
+            });
 
-        <div class="card">
-            <div class="card-header">
-                <span class="title">ClaritySetu Portfolio</span>
-                <span class="badge badge-task">Live</span>
-            </div>
-            <div class="content">
-• <a href="https://claritysetu.github.io/NCERT-Physics/">NCERT Physics Hub</a>
-• <a href="https://sites.google.com/view/physics-supplements">Physics Supplements</a>
-• <a href="https://sites.google.com/view/csphysics/home">Project Home</a>
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
-        </div>
+            if (filteredNotes.length === 0) {
+                container.innerHTML = `<div class="empty-state">No notes found in this category.</div>`;
+                return;
+            }
 
-        <div class="card">
-            <div class="card-header">
-                <span class="title">Logistics</span>
-                <span class="badge badge-task">Personal</span>
-            </div>
-            <div class="content">
-                <div class="list-item"><div class="checkbox checked-box"></div>Car wash</div>
-                <div class="list-item"><div class="checkbox checked-box"></div>Samanyu Vaccination</div>
-                <div class="list-item"><div class="checkbox"></div>Petrol refill (₹1000)</div>
-            </div>
-            <div class="card-footer"><span>🤍</span><span>💬</span><span>🔖</span></div>
-        </div>
+            filteredNotes.forEach(note => {
+                const isPinned = pinnedIds.includes(note.id);
+                const isSaved = savedIds.includes(note.id);
+                
+                const card = document.createElement('div');
+                card.className = `card ${isPinned ? 'is-pinned' : ''}`;
+                card.innerHTML = `
+                    <div class="pinned-label">📌 PINNED</div>
+                    <div class="card-header">
+                        <span class="card-title">${note.title}</span>
+                        <span class="badge cat-${note.cat}">${note.cat}</span>
+                    </div>
+                    <div class="card-content">${note.content}</div>
+                    <div class="card-footer">
+                        <span class="action-btn" onclick="toggleLike(this)">🤍</span>
+                        <span class="action-btn ${isPinned ? 'active' : ''}" onclick="togglePin(${note.id})">📌</span>
+                        <span class="action-btn ${isSaved ? 'active' : ''}" onclick="toggleSave(${note.id})">🔖</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
 
-    </div>
+        function filterFeed(category, el) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            renderFeed();
+        }
 
-    <div class="bottom-spacer"></div>
+        function togglePin(id) {
+            if (pinnedIds.includes(id)) {
+                pinnedIds = pinnedIds.filter(pid => pid !== id);
+            } else {
+                pinnedIds.push(id);
+            }
+            localStorage.setItem('pins', JSON.stringify(pinnedIds));
+            renderFeed();
+        }
 
+        function toggleSave(id) {
+            if (savedIds.includes(id)) {
+                savedIds = savedIds.filter(sid => sid !== id);
+            } else {
+                savedIds.push(id);
+            }
+            localStorage.setItem('saved', JSON.stringify(savedIds));
+            renderFeed();
+        }
+
+        function toggleLike(el) {
+            el.classList.toggle('active');
+            el.innerHTML = el.classList.contains('active') ? '❤️' : '🤍';
+        }
+
+        // Initial Load
+        renderFeed();
+    </script>
 </body>
 </html>
